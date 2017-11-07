@@ -114,6 +114,7 @@ class AliOss
      */
     public function writeFile($file, $datas, $auto_mkdir = false)
     {
+        $file = $this->getOssFile($file);
         $r = $this->oss_client->putObject($this->bucketname, $file, $datas);
         return !is_null($r);
     }
@@ -142,6 +143,7 @@ class AliOss
      */
     public function readFile($file, $output_file = null)
     {
+        $file = $this->getOssFile($file);
         return $this->oss_client->getObject($this->bucketname, $file);
     }
 
@@ -153,6 +155,7 @@ class AliOss
      */
     public function getFileInfo($file)
     {
+        $file = $this->getOssFile($file);
         $r = $this->oss_client->getObjectMeta($this->bucketname, $file);
         if (is_null($r)) {
             return null;
@@ -169,6 +172,7 @@ class AliOss
      */
     public function readDir($path)
     {
+        $path = $this->getOssFile($path);
         return $this->fileList($path);
     }
 
@@ -236,6 +240,7 @@ class AliOss
      */
     public function deleteFile($file)
     {
+        $file = $this->getOssFile($file);
         $r = $this->oss_client->deleteObject($this->bucketname, $file);
         return !is_null($r);
     }
@@ -249,6 +254,7 @@ class AliOss
      */
     public function mkDir($path, $auto_mkdir = false)
     {
+        $path = $this->getOssFile($path);
         $r = $this->oss_client->createObjectDir($this->bucketname, $path);
         return !is_null($r);
     }
@@ -263,5 +269,10 @@ class AliOss
     {
         //$r = $this->HttpAction('DELETE', $dir, null);
         return !is_null(1);
+    }
+
+    private function getOssFile($filename)
+    {
+        return substr($filename, 1);
     }
 }
