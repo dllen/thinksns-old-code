@@ -7,6 +7,15 @@
 // 原有的文件
 class VideoModel extends Model
 {
+
+    //获取云存储配置
+    public function getConfig()
+    {
+        $config = model('Xdata')->get('admin_Config:cloudattach');
+
+        return $config;
+    }
+
     public function upload($from = 0, $timeline = 0)
     {
         // $imageinfo = pathinfo($_FILES['pic']['name']);
@@ -22,9 +31,9 @@ class VideoModel extends Model
         // return $_FILES['video'];
         //如果视频上传正确.
         if ($uploadCondition) {
-            $savePath = SITE_PATH.$this->_getSavePath();   //网页视频文件夹
-            $sourceSavePath = $savePath.'/source';    //源视频文件夹
-            $partSavePath = $savePath.'/part';  //视频片段文件夹
+            $savePath = SITE_PATH . $this->_getSavePath();   //网页视频文件夹
+            $sourceSavePath = $savePath . '/source';    //源视频文件夹
+            $partSavePath = $savePath . '/part';  //视频片段文件夹
             if (!file_exists($sourceSavePath)) {
                 mkdir($sourceSavePath, 0777, true);
             }
@@ -32,22 +41,22 @@ class VideoModel extends Model
                 mkdir($partSavePath, 0777, true);
             }
             $filename = uniqid();    //文件名称
-            $image_name = $filename.'.jpg';
-            $video_source_name = $filename.'.'.$video_ext;   //源视频名称
-            $video_name = $filename.'.mp4';   //视频名称
-            if (@move_uploaded_file($_FILES['video']['tmp_name'], $sourceSavePath.'/'.$video_source_name)) {
+            $image_name = $filename . '.jpg';
+            $video_source_name = $filename . '.' . $video_ext;   //源视频名称
+            $video_name = $filename . '.mp4';   //视频名称
+            if (@move_uploaded_file($_FILES['video']['tmp_name'], $sourceSavePath . '/' . $video_source_name)) {
                 //上传视频到源视频文件夹
 
                 set_time_limit(0);
                 if (PATH_SEPARATOR == ':') {  //Linux
                     $ffmpegpath = $video_config['ffmpeg_path'];
                 } else {     //Windows
-                    $ffmpegpath = SITE_PATH.$video_config['ffmpeg_path'];
+                    $ffmpegpath = SITE_PATH . $video_config['ffmpeg_path'];
                 }
 
                 //处理视频格式--转为h264格式
                 if ($video_config['video_transfer_async']) {  //后台处理
-                    $transfer['sourceSavePath'] = $this->_getSavePath().'/source';
+                    $transfer['sourceSavePath'] = $this->_getSavePath() . '/source';
                     $transfer['video_source_name'] = $video_source_name;
                     $transfer['savePath'] = $this->_getSavePath();
                     $transfer['video_name'] = $video_name;
@@ -68,38 +77,38 @@ class VideoModel extends Model
                     $imageinfo = pathinfo($_FILES['pic']['name']);
                     $image_ext = $imageinfo['extension'];
                     if (in_array(strtolower($image_ext), array('jpg', 'png', 'gif', 'jpeg'), true)) {
-                        @move_uploaded_file($_FILES['pic']['tmp_name'], $savePath.'/'.$image_name);
+                        @move_uploaded_file($_FILES['pic']['tmp_name'], $savePath . '/' . $image_name);
                     }
                 }
 
                 //如果图片未上传或上传失败
-                if (!file_exists($savePath.'/'.$image_name)) {
-                    $this->get_video_image($ffmpegpath, $sourceSavePath.'/'.$video_name, $savePath.'/'.$image_name);
+                if (!file_exists($savePath . '/' . $image_name)) {
+                    $this->get_video_image($ffmpegpath, $sourceSavePath . '/' . $video_name, $savePath . '/' . $image_name);
                 }
                 //截取视频前5秒
-                $this->get_video_part($ffmpegpath, $sourceSavePath.'/'.$video_name, $partSavePath.'/'.$video_name);
+                $this->get_video_part($ffmpegpath, $sourceSavePath . '/' . $video_name, $partSavePath . '/' . $video_name);
                 // $result['video_path']   = $from==2 ? $this->_getSavePath().'/'.$video_name : $this->_getSavePath().'/source/'.$video_name;
 
-                $result['video_path'] = $this->_getSavePath().'/source/'.$video_name;
-                $result['video_mobile_path'] = $this->_getSavePath().'/source/'.$video_name;
-                $result['video_part_path'] = $this->_getSavePath().'/part/'.$video_name;
+                $result['video_path'] = $this->_getSavePath() . '/source/' . $video_name;
+                $result['video_mobile_path'] = $this->_getSavePath() . '/source/' . $video_name;
+                $result['video_part_path'] = $this->_getSavePath() . '/part/' . $video_name;
                 $result['size'] = intval($_FILES['video']['size']);
                 $result['name'] = t($_FILES['video']['name']);
                 $result['ctime'] = time();
                 $result['uid'] = intval($_SESSION['mid']);
                 $result['extension'] = $video_ext;
-                $result['image_path'] = $this->_getSavePath().'/'.$image_name;
+                $result['image_path'] = $this->_getSavePath() . '/' . $image_name;
                 $result['transfer_id'] = $transfer_id;
 
-                if ($image_info = getimagesize($savePath.'/'.$image_name)) {
+                if ($image_info = getimagesize($savePath . '/' . $image_name)) {
                     $result['image_width'] = $image_info[0];
                     $result['image_height'] = $image_info[1];
                 }
                 $result['from'] = $from;
-                $result['timeline'] = $timeline ? $timeline : $this->get_video_timeline($ffmpegpath, $sourceSavePath.'/'.$video_name);
+                $result['timeline'] = $timeline ? $timeline : $this->get_video_timeline($ffmpegpath, $sourceSavePath . '/' . $video_name);
                 $video_id = $this->add($result);
                 if ($transfer_id) {
-                    D('video_transfer')->where('transfer_id='.$transfer_id)->setField('video_id', $video_id);
+                    D('video_transfer')->where('transfer_id=' . $transfer_id)->setField('video_id', $video_id);
                 }
                 $result['video_id'] = intval($video_id);
                 $result['status'] = 1;
@@ -126,7 +135,7 @@ class VideoModel extends Model
     {
         set_time_limit(0);
 
-        if (! isset($_FILES['Filedata'])) {
+        if (!isset($_FILES['Filedata'])) {
             return array(
                 'status' => 0,
                 'message' => '上传文件到服务器失败',
@@ -136,32 +145,36 @@ class VideoModel extends Model
         $video = $_FILES['Filedata'];
         $ext = pathinfo($video['name'], PATHINFO_EXTENSION);
 
-        if (! in_array(strtolower($ext), $exts = array('mp4', 'ogg'))) {
+        if (!in_array(strtolower($ext), $exts = array('mp4', 'ogg'))) {
             return array(
                 'status' => 0,
-                'message' => '上传格式错误，只允许上传：'.implode(',', $exts),
+                'message' => '上传格式错误，只允许上传：' . implode(',', $exts),
             );
         } elseif ($video['error'] !== UPLOAD_ERR_OK) {
             return array(
                 'status' => 0,
-                'message' => '文件上传错误，错误码：'.$video['error'],
+                'message' => '文件上传错误，错误码：' . $video['error'],
             );
         }
 
+
+        $config = $this->getConfig();
+        $cloud = new AliOss($config['cloud_attach_bucket'], $config['cloud_attach_admin'], $config['cloud_attach_password'], $config['cloud_attach_api_url']);
         $path = $this->_getSavePath();
-        $savePath = SITE_PATH.$path;
+        $_savePtah = $path;
+        $savePath = SITE_PATH . $path;
         $filename = uniqid();
-        $imageName = $filename.'.jpg';
-        $videoName = $filename.'.'.$ext;
+        $imageName = $filename . '.jpg';
+        $videoName = $filename . '.' . $ext;
 
         if (!file_exists($savePath)) {
             @mkdir($savePath, 0777, true);
         }
 
-        $videoPath = $savePath.'/'.$videoName;
-        $videoImagePath = $savePath.'/'.$imageName;
+        $videoPath = $savePath . '/' . $videoName;
+        $videoImagePath = $savePath . '/' . $imageName;
 
-        if (! move_uploaded_file($video['tmp_name'], $videoPath)) {
+        if (!move_uploaded_file($video['tmp_name'], $videoPath)) {
             return array(
                 'status' => 0,
                 'message' => '保存文件失败！'
@@ -174,6 +187,13 @@ class VideoModel extends Model
         // 截取首帧视频图像
         $this->get_video_image($ffmpegPath, $videoPath, $videoImagePath);
 
+        $ossVideoPath = $_savePtah . '/' . $videoName;
+        $ossVideoImgPath = $_savePtah . '/' . $imageName;
+        $ossVideoPartPath = $_savePtah . '/' . $videoName;
+        // 保存到oss
+        $uploadOssResult = $cloud->writeFile($ossVideoPath, fopen($videoPath, 'r'));
+        $uploadOssImgResult = $cloud->writeFile($ossVideoImgPath, fopen($videoImagePath, 'r'));
+
         $data = array(
             'uid' => isset($_SESSION['mid']) ? intval($_SESSION['mid']) : 0,
             'ctime' => time(),
@@ -181,9 +201,9 @@ class VideoModel extends Model
             'size' => $video['size'],
             'timeline' => intval($this->get_video_timeline($ffmpegPath, $videoPath)),
             'extension' => $ext,
-            'video_path' => $path.'/'.$videoName,
-            'video_part_path' => $path.'/'.$videoName,
-            'video_mobile_path' => $path.'/'.$videoName,
+            'video_path' => $path . '/' . $videoName,
+            'video_part_path' => $path . '/' . $videoName,
+            'video_mobile_path' => $path . '/' . $videoName,
             'image_path' => null,
             'image_width' => 0,
             'image_height' => 0,
@@ -195,7 +215,7 @@ class VideoModel extends Model
         );
 
         if (file_exists($videoImagePath)) {
-            $data['image_path'] = $path.'/'.$imageName;
+            $data['image_path'] = $path . '/' . $imageName;
 
             $imageInfo = getimagesize($videoImagePath);
             $data['image_width'] = isset($imageInfo[0]) ? $imageInfo[0] : 0;
@@ -215,12 +235,12 @@ class VideoModel extends Model
         $minute = floor(($num - 3600 * $hour) / 60);
         $second = floor((($num - 3600 * $hour) - 60 * $minute) % 60);
 
-        return $hour.'时'.$minute.'分'.$second.'秒';
+        return $hour . '时' . $minute . '分' . $second . '秒';
     }
 
     public function mobile_video_codec($ffmpegpath, $sourceSavePath, $video_source_name, $savePath, $video_name)
     {
-        $command = $ffmpegpath.' -y -i '.$sourceSavePath.'/'.$video_source_name.' -vcodec libx264 -vf transpose=1 -metadata:s:v:0 rotate=0 '.$savePath.'/'.$video_name;
+        $command = $ffmpegpath . ' -y -i ' . $sourceSavePath . '/' . $video_source_name . ' -vcodec libx264 -vf transpose=1 -metadata:s:v:0 rotate=0 ' . $savePath . '/' . $video_name;
         exec($command);
     }
 
@@ -234,10 +254,10 @@ class VideoModel extends Model
             if (PATH_SEPARATOR == ':') {  //Linux
                 $ffmpegpath = $data['ffmpeg_path'];
             } else {     //Windows
-                $ffmpegpath = SITE_PATH.$data['ffmpeg_path'];
+                $ffmpegpath = SITE_PATH . $data['ffmpeg_path'];
             }
         }
-        $command = "$ffmpegpath -i ".$input." 2>&1 | grep 'Duration' | cut -d ' ' -f 4 | sed s/,//";
+        $command = "$ffmpegpath -i " . $input . " 2>&1 | grep 'Duration' | cut -d ' ' -f 4 | sed s/,//";
         $timeline = exec($command);
         $time_arr = explode(':', $timeline);
         $timeline = $time_arr[0] * 3600 + $time_arr[1] * 60 + intval($time_arr[2]);
@@ -255,7 +275,7 @@ class VideoModel extends Model
             if (PATH_SEPARATOR == ':') {  //Linux
                 $ffmpegpath = $data['ffmpeg_path'];
             } else {     //Windows
-                $ffmpegpath = SITE_PATH.$data['ffmpeg_path'];
+                $ffmpegpath = SITE_PATH . $data['ffmpeg_path'];
             }
         }
 
@@ -273,7 +293,7 @@ class VideoModel extends Model
             if (PATH_SEPARATOR == ':') {  //Linux
                 $ffmpegpath = $data['ffmpeg_path'];
             } else {     //Windows
-                $ffmpegpath = SITE_PATH.$data['ffmpeg_path'];
+                $ffmpegpath = SITE_PATH . $data['ffmpeg_path'];
             }
         }
         $command = "$ffmpegpath -ss 00:00:$begin_second -i $input -t 00:00:$end_second $output";
@@ -283,8 +303,8 @@ class VideoModel extends Model
     //上传临时文件
     private function _getSavePath()
     {
-        $savePath = '/data/video/'.date('Y/md');
-        $fullPath = SITE_PATH.$savePath;
+        $savePath = '/data/video/' . date('Y/md');
+        $fullPath = SITE_PATH . $savePath;
         if (!file_exists($fullPath)) {
             mkdir($fullPath, 0777, true);
         }
@@ -303,18 +323,18 @@ class VideoModel extends Model
             if (PATH_SEPARATOR == ':') {  //Linux
                 $ffmpegpath = $video_config['ffmpeg_path'];
             } else {     //Windows
-                $ffmpegpath = SITE_PATH.$video_config['ffmpeg_path'];
+                $ffmpegpath = SITE_PATH . $video_config['ffmpeg_path'];
             }
             foreach ($video_list as $k => $v) {
-                if (file_exists(SITE_PATH.$v['sourceSavePath'].'/'.$v['video_source_name'])) {
-                    $sourceSavePath = SITE_PATH.$v['sourceSavePath'];
-                    $savePath = SITE_PATH.$v['savePath'];
-                    $command = $ffmpegpath.' -y -i '.$sourceSavePath.'/'.$v['video_source_name'].' -vcodec libx264 '.$savePath.'/'.$v['video_name'];
+                if (file_exists(SITE_PATH . $v['sourceSavePath'] . '/' . $v['video_source_name'])) {
+                    $sourceSavePath = SITE_PATH . $v['sourceSavePath'];
+                    $savePath = SITE_PATH . $v['savePath'];
+                    $command = $ffmpegpath . ' -y -i ' . $sourceSavePath . '/' . $v['video_source_name'] . ' -vcodec libx264 ' . $savePath . '/' . $v['video_name'];
                     exec($command);
 
-                    if (file_exists($savePath.'/'.$v['video_name'])) {
-                        D('video_transfer')->where('transfer_id='.$v['transfer_id'])->setField('status', 1);
-                        $feed_id = D('video_transfer')->where('transfer_id='.$v['transfer_id'])->getField('feed_id');
+                    if (file_exists($savePath . '/' . $v['video_name'])) {
+                        D('video_transfer')->where('transfer_id=' . $v['transfer_id'])->setField('status', 1);
+                        $feed_id = D('video_transfer')->where('transfer_id=' . $v['transfer_id'])->getField('feed_id');
                         model('Feed')->cleanCache(array($feed_id));
                     }
                 } else {
@@ -362,7 +382,7 @@ class VideoModel extends Model
     public function getQqOutsideVideoInfo($link)
     {
         if (extension_loaded('zlib')) {
-            $content = file_get_contents('compress.zlib://'.$link); //获取
+            $content = file_get_contents('compress.zlib://' . $link); //获取
         }
 
         if (!$content) {
@@ -371,7 +391,7 @@ class VideoModel extends Model
         preg_match('/vid:\s*"(.+?)",/i', $content, $flashvar);
         preg_match('/itemprop=\"image\" content=\"(.+?)\"/i', $content, $img);
         preg_match("/<title>(.*?)<\/title>/", $content, $title);
-        $flash_url = 'http://static.video.qq.com/TPout.swf?vid='.$flashvar[1].'&auto=1';
+        $flash_url = 'http://static.video.qq.com/TPout.swf?vid=' . $flashvar[1] . '&auto=1';
         $return = array();
         $return['title'] = $title[1];
         $return['image_url'] = $img[1];
@@ -384,7 +404,7 @@ class VideoModel extends Model
     {
         $contents = file_get_contents($link);
         if (extension_loaded('zlib')) {
-            $content = file_get_contents('compress.zlib://'.$link); //获取
+            $content = file_get_contents('compress.zlib://' . $link); //获取
         }
 
         if (!$content) {
@@ -398,7 +418,7 @@ class VideoModel extends Model
         $return = array();
         $return['title'] = $title;
         $return['image_url'] = $image;
-        $return['flash_url'] = $baseurl.$vid[0];
+        $return['flash_url'] = $baseurl . $vid[0];
 
         return $return;
     }
@@ -431,10 +451,10 @@ class VideoModel extends Model
 
         $_temp = array();
         foreach ($conf as $key => $value) {
-            array_push($_temp, $key.'='.$value);
+            array_push($_temp, $key . '=' . $value);
         }
 
-        $url = $showBasicUrl.'?'.implode('&', $_temp);
+        $url = $showBasicUrl . '?' . implode('&', $_temp);
         $data = file_get_contents($url);
         $data = json_decode($data, true);
 
@@ -464,10 +484,10 @@ class VideoModel extends Model
 
         $config = array();
         foreach ($conf as $key => $value) {
-            array_push($config, $key.'='.$value);
+            array_push($config, $key . '=' . $value);
         }
 
-        $url .= '?'.implode('&', $config);
+        $url .= '?' . implode('&', $config);
         $data = file_get_contents($url);
         $data = json_decode($data, true);
 
@@ -567,7 +587,7 @@ class VideoModel extends Model
             }
         } else {
             if (extension_loaded('zlib')) {
-                $content = file_get_contents('compress.zlib://'.$link); //获取
+                $content = file_get_contents('compress.zlib://' . $link); //获取
             }
 
             if (!$content) {
@@ -581,39 +601,39 @@ class VideoModel extends Model
             preg_match('/cover: "(.+?)"/i', $content, $img);
             preg_match("/<title>(.*?)<\/title>/i", $content, $title);
             $title[1] = iconv('GBK', 'UTF-8', $title[1]);
-            $flash_url = 'http://player.ku6.com/refer/'.$flashvar[1].'/v.swf';
+            $flash_url = 'http://player.ku6.com/refer/' . $flashvar[1] . '/v.swf';
         } elseif ('tudou.com' == $host && strpos($link, 'www.tudou.com/albumplay') !== false) {
             preg_match("/albumplay\/([\w\-\.]+)\//", $link, $flashvar);
             preg_match("/<title>(.*?)<\/title>/i", $content, $title);
             preg_match('/pic: "(.+?)"/i', $content, $img);
             $title[1] = iconv('GBK', 'UTF-8', $title[1]);
-            $flash_url = 'http://www.tudou.com/a/'.$flashvar[1].'/&autoPlay=true/v.swf';
+            $flash_url = 'http://www.tudou.com/a/' . $flashvar[1] . '/&autoPlay=true/v.swf';
         } elseif ('tudou.com' == $host && strpos($link, 'www.tudou.com/programs') !== false) {
             //dump(auto_charset($content,'GBK','UTF8'));
             preg_match("/programs\/view\/([\w\-\.]+)\//", $link, $flashvar);
             preg_match("/<title>(.*?)<\/title>/i", $content, $title);
             preg_match("/pic: \'(.+?)\'/i", $content, $img);
             $title[1] = iconv('GBK', 'UTF-8', $title[1]);
-            $flash_url = 'http://www.tudou.com/v/'.$flashvar[1].'/&autoPlay=true/v.swf';
+            $flash_url = 'http://www.tudou.com/v/' . $flashvar[1] . '/&autoPlay=true/v.swf';
         } elseif ('tudou.com' == $host && strpos($link, 'www.tudou.com/listplay') !== false) {
             //dump(auto_charset($content,'GBK','UTF8'));
             preg_match("/listplay\/([\w\-\.]+)\//", $link, $flashvar);
             preg_match("/<title>(.*?)<\/title>/i", $content, $title);
             preg_match('/pic:"(.+?)"/i', $content, $img);
             $title[1] = iconv('GBK', 'UTF-8', $title[1]);
-            $flash_url = 'http://www.tudou.com/l/'.$flashvar[1].'/&autoPlay=true/v.swf';
+            $flash_url = 'http://www.tudou.com/l/' . $flashvar[1] . '/&autoPlay=true/v.swf';
         } elseif ('tudou.com' == $host && strpos($link, 'douwan.tudou.com') !== false) {
             //dump(auto_charset($content,'GBK','UTF8'));
             preg_match("/code=([\w\-\.]+)$/", $link, $flashvar);
             preg_match('/title":"(.+?)"/i', $content, $title);
             preg_match('/itempic":"(.+?)"/i', $content, $img);
             $title[1] = iconv('GBK', 'UTF-8', $title[1]);
-            $flash_url = 'http://www.tudou.com/v/'.$flashvar[1].'/&autoPlay=true/v.swf';
+            $flash_url = 'http://www.tudou.com/v/' . $flashvar[1] . '/&autoPlay=true/v.swf';
         } elseif ('youtube.com' == $host) {
             preg_match('/http:\/\/www.youtube.com\/watch\?v=([^\/&]+)&?/i', $link, $flashvar);
             preg_match('/<link itemprop="thumbnailUrl" href="(.+?)">/i', $content, $img);
             preg_match("/<title>(.*?)<\/title>/", $content, $title);
-            $flash_url = 'http://www.youtube.com/embed/'.$FLASHVAR[1];
+            $flash_url = 'http://www.youtube.com/embed/' . $FLASHVAR[1];
         } elseif ('sohu.com' == $host) {
             preg_match('/og:videosrc" content="(.+?)"/i', $content, $flashvar);
             preg_match('/og:title" content="(.+?)"/i', $content, $title);
@@ -624,7 +644,7 @@ class VideoModel extends Model
             preg_match('/vid:"(.+?)",/i', $content, $flashvar);
             preg_match('/itemprop=\"image\" content=\"(.+?)\"/i', $content, $img);
             preg_match("/<title>(.*?)<\/title>/", $content, $title);
-            $flash_url = 'http://static.video.qq.com/TPout.swf?vid='.$flashvar[1].'&auto=1';
+            $flash_url = 'http://static.video.qq.com/TPout.swf?vid=' . $flashvar[1] . '&auto=1';
         } elseif ('sina.com.cn' == $host) {
             preg_match("/swfOutsideUrl:\'(.+?)\'/i", $content, $flashvar);
             preg_match("/pic\:[ ]*\'(.*?)\'/i", $content, $img);
@@ -634,9 +654,9 @@ class VideoModel extends Model
             preg_match("/video\/([\w\-]+)$/", $link, $flashvar);
             preg_match("/<meta property=\"og:image\" content=\"(.*)\"\/>/i", $content, $img);
             preg_match("/<meta property=\"og:title\" content=\"(.*)\"\/>/i", $content, $title);
-            $flash_url = 'http://player.yinyuetai.com/video/player/'.$flashvar[1].'/v_0.swf';
+            $flash_url = 'http://player.yinyuetai.com/video/player/' . $flashvar[1] . '/v_0.swf';
             $base = base64_encode(file_get_contents($img[1]));
-            $img[1] = 'data:image/jpeg;base64,'.$base;
+            $img[1] = 'data:image/jpeg;base64,' . $base;
         } elseif ('le.com' == $host) {
             echo $content;
             exit();
@@ -651,8 +671,8 @@ class VideoModel extends Model
     /**
      * 删除视频信息，提供假删除功能.
      *
-     * @param int    $id    视频ID
-     * @param string $type  操作类型，若为delVideo则进行假删除操作，deleteVideo则进行彻底删除操作
+     * @param int $id 视频ID
+     * @param string $type 操作类型，若为delVideo则进行假删除操作，deleteVideo则进行彻底删除操作
      * @param string $title ???
      *
      * @return array 返回操作结果信息
@@ -685,7 +705,7 @@ class VideoModel extends Model
     public function update_viewrecord($feed_id, $uid)
     {
         //增加浏览量
-            $map['feed_id'] = $data['feed_id'] = $feed_id;
+        $map['feed_id'] = $data['feed_id'] = $feed_id;
         $map['uid'] = $data['uid'] = $uid;
         $data['last_view_time'] = time();
         if (D('feed_video_viewrecord')->where($map)->find()) {
