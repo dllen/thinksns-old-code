@@ -122,6 +122,21 @@ class AliOss
     }
 
     /**
+     * 上传文件.
+     *
+     * @param $file 文件路径（包含文件名）
+     * @param $datas 文件内容 或 文件IO数据流
+     * @param $auto_mkdir =false 是否自动创建父级目录
+     * return true or false
+     */
+    public function uploadFile($file, $fileName, $auto_mkdir = false)
+    {
+        $file = $this->getOssFile($file);
+        $r = $this->oss_client->uploadFile($this->bucketname, $file, $fileName, __FILE__);
+        return !is_null($r);
+    }
+
+    /**
      * 获取上传文件后的信息（仅图片空间有返回数据）.
      *
      * @param $key 信息字段名（x-upyun-width、x-upyun-height、x-upyun-frames、x-upyun-file-type）

@@ -104,13 +104,13 @@ class VideoModel extends Model
                 $ossVideoPartPath = $_savePtah . '/part/' . $video_name;
                 // 保存到oss
                 if (file_exists($videoPath)) {
-                    $uploadOssResult = $cloud->writeFile($ossVideoPath, fopen($videoPath, 'r'));
+                    $uploadOssResult = $cloud->uploadFile($ossVideoPath, $videoPath);
                 }
                 if (file_exists($videoImagePath)) {
-                    $uploadOssImgResult = $cloud->writeFile($ossVideoImgPath, fopen($videoImagePath, 'r'));
+                    $uploadOssImgResult = $cloud->uploadFile($ossVideoImgPath, $videoImagePath);
                 }
                 if (file_exists($videoPartPath)) {
-                    $uploadOssPartResult = $cloud->writeFile($ossVideoPartPath, fopen($videoPartPath, 'r'));
+                    $uploadOssPartResult = $cloud->uploadFile($ossVideoPartPath, $videoPartPath);
                 }
 
                 $result['video_path'] = $ossDomain . $videoPath;
@@ -205,8 +205,6 @@ class VideoModel extends Model
             );
         }
 
-        $config = $this->getConfig();
-
         $ffmpegPath = isset($config['ffmpeg_path']) ? $config['ffmpeg_path'] : null;
 
         // 截取首帧视频图像
@@ -218,7 +216,7 @@ class VideoModel extends Model
         $ossVideoImgPath = $_savePtah . '/' . $imageName;
         // 保存到oss
         if (file_exists($videoPath)) {
-            $uploadOssResult = $cloud->writeFile($ossVideoPath, fopen($videoPath, 'r'));
+            $uploadOssResult = $cloud->uploadFile($ossVideoPath, $videoPath);
         }
         $data = array(
             'uid' => isset($_SESSION['mid']) ? intval($_SESSION['mid']) : 0,
@@ -244,7 +242,7 @@ class VideoModel extends Model
         );
 
         if (file_exists($videoImagePath)) {
-            $uploadOssImgResult = $cloud->writeFile($ossVideoImgPath, fopen($videoImagePath, 'r'));
+            $uploadOssImgResult = $cloud->$videoPath($ossVideoImgPath, $videoImagePath);
 
             //$data['image_path'] = $path . '/' . $imageName;
             $data['image_path'] = $ossDomain . $ossVideoImgPath;
