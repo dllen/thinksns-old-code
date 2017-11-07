@@ -120,7 +120,7 @@ class CloudImageModel
         $config = $this->getConfig();
 
         //$cloud = new UpYun($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
-        $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+        $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password'], $config['cloud_image_api_url']);
         $cloud->setTimeout(60);
         $res = $cloud->getFileInfo($filename);
         return $res;
@@ -176,7 +176,7 @@ class CloudImageModel
         $config = $this->getConfig();
 
         //$cloud = new UpYun($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
-        $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+        $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password'], $config['cloud_image_api_url']);
         $cloud->setTimeout(60);
         $res = $cloud->writeFile($filename, $filecontent, true);
         if (!$res) {
@@ -201,7 +201,7 @@ class CloudImageModel
         $config = $this->getConfig();
 
         //$cloud = new UpYun($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
-        $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+        $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password'], $config['cloud_image_api_url']);
         $cloud->setTimeout(60);
         $res = $cloud->deleteFile($filename);
         if (!$res) {
@@ -273,7 +273,7 @@ class CloudImageModel
                 $config = $this->getConfig();
 
                 //$cloud = new UpYun($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
-                $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+                $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password'], $config['cloud_image_api_url']);
                 $cloud->setTimeout(60);
 
                 $file_content = file_get_contents($file['tmp_name']);

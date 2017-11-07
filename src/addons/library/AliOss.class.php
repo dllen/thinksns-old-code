@@ -29,10 +29,12 @@ class AliOss
      * @param $bucketname 空间名称
      * @param $username 操作员名称
      * @param $password 密码
+     * @param $api_domain 调用end_point
      * return UpYun object
      */
-    public function __construct($bucketname, $username, $password)
+    public function __construct($bucketname, $username, $password, $api_domain)
     {
+        $this->api_domain = $api_domain;
         $this->bucketname = $bucketname;
         $this->username = $username;
         $this->password = $password;

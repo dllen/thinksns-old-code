@@ -81,7 +81,7 @@ class CloudAttachModel
         $filename = trim($filename);
         $config = $this->getConfig();
         //$cloud = new UpYun($config['cloud_attach_bucket'], $config['cloud_attach_admin'], $config['cloud_attach_password']);
-        $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+        $cloud = new AliOss($config['cloud_attach_bucket'], $config['cloud_attach_admin'], $config['cloud_attach_password'], $config['cloud_attach_api_url']);
         $cloud->setTimeout(60);
         $content = $cloud->readFile('/' . $filename);
         if (!$content) {
@@ -188,7 +188,7 @@ class CloudAttachModel
                 //上传到云服务器
                 $config = $this->getConfig();
                 //$cloud = new UpYun($config['cloud_attach_bucket'], $config['cloud_attach_admin'], $config['cloud_attach_password']);
-                $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+                $cloud = new AliOss($config['cloud_attach_bucket'], $config['cloud_attach_admin'], $config['cloud_attach_password'], $config['cloud_attach_api_url']);
                 $cloud->setTimeout(60);
 
                 $file_content = file_get_contents($file['tmp_name']);
