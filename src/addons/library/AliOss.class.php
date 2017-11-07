@@ -132,7 +132,7 @@ class AliOss
     public function uploadFile($file, $fileName, $auto_mkdir = false)
     {
         $file = $this->getOssFile($file);
-        $r = $this->oss_client->uploadFile($this->bucketname, $file, $fileName, __FILE__);
+        $r = $this->oss_client->uploadFile($this->bucketname, $file, $fileName);
         return !is_null($r);
     }
 
