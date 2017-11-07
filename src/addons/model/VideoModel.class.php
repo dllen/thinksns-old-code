@@ -205,7 +205,8 @@ class VideoModel extends Model
             );
         }
 
-        $config = model('Xdata')->get('admin_Content:video_config');
+        $config = $this->getConfig();
+
         $ffmpegPath = isset($config['ffmpeg_path']) ? $config['ffmpeg_path'] : null;
 
         // 截取首帧视频图像
