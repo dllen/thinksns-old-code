@@ -63,13 +63,13 @@ class CloudImageModel
     //获取上传地址
     public function getUploadUrl()
     {
-        return $this->config['cloud_image_api_url'].'/'.$this->config['cloud_image_bucket'].'/';
+        return $this->config['cloud_image_api_url'] . '/' . $this->config['cloud_image_bucket'] . '/';
     }
 
     //获取上传地址
     public function getImageUrl($filename, $width, $height, $cut)
     {
-        $filename = str_replace('//', '/', '/'.trim($filename));
+        $filename = str_replace('//', '/', '/' . trim($filename));
         $prefix_urls = trim($this->config['cloud_image_prefix_urls']);
         $prefix_urls = explode(',', $prefix_urls);
         $prefix_urls = array_filter($prefix_urls);
@@ -81,10 +81,24 @@ class CloudImageModel
         }
         $cloud_image_prefix_url = trim($cloud_image_prefix_url);
         if ($width && $height) {
-           // return $cloud_image_prefix_url.$filename.'!'.$width.'x'.$height.(($cut) ? '.cut' : '').'.jpg';
-            return $cloud_image_prefix_url . $filename . '?x-oss-process=image/resize,w_' . $width . ',h_' . $height . ',limit_0';
+            // return $cloud_image_prefix_url.$filename.'!'.$width.'x'.$height.(($cut) ? '.cut' : '').'.jpg';
+            $process = '';
+            if ($width != 'auto' || $height != 'auto') {
+                $process = '?x-oss-process=image/resize,';
+                if ($width != 'auto') {
+                    $process = $process . 'w_' . $width . ',';
+                }
+                if ($height != 'auto') {
+                    $process = $process . 'h_' . $height . ',';
+                }
+                $process = $process . 'limit_0';
+                if (!empty($cut)) {
+                    $process = $process . '&cut=' . $cut;
+                }
+            }
+            return $cloud_image_prefix_url . $filename . $process;
         } else {
-            return $cloud_image_prefix_url.$filename;
+            return $cloud_image_prefix_url . $filename;
         }
     }
 
@@ -92,7 +106,7 @@ class CloudImageModel
     public function getImageInfo($filename)
     {
         $image_url = $this->getImageUrl($filename);
-        $exif = file_get_contents($image_url.'!exif');
+        $exif = file_get_contents($image_url . '!exif');
         if (!$exif) {
             return false;
         } else {
@@ -122,11 +136,11 @@ class CloudImageModel
     public function getPolicydoc()
     {
         $policydoc = array(
-           'bucket'               => $this->config['cloud_image_bucket'],
-           'expiration'           => time() + 600, //1分钟超时
-           'save-key'             => '/{year}/{mon}{day}/{random}.{suffix}',
-           'allow-file-type'      => 'jpg,jpeg,gif,png',
-           'content-length-range' => '0,5120000',    //最大5M
+            'bucket' => $this->config['cloud_image_bucket'],
+            'expiration' => time() + 600, //1分钟超时
+            'save-key' => '/{year}/{mon}{day}/{random}.{suffix}',
+            'allow-file-type' => 'jpg,jpeg,gif,png',
+            'content-length-range' => '0,5120000',    //最大5M
         );
 
         return $policydoc;
@@ -143,7 +157,7 @@ class CloudImageModel
     //获取signature
     public function getSignature()
     {
-        $signature = md5($this->getPolicy().'&'.$this->config['cloud_image_form_api_key']);
+        $signature = md5($this->getPolicy() . '&' . $this->config['cloud_image_form_api_key']);
 
         return $signature;
     }
@@ -151,7 +165,7 @@ class CloudImageModel
     /**
      * 写入文件.
      *
-     * @param string $filename    文件相对路径
+     * @param string $filename 文件相对路径
      * @param string $filecontent 文件数据
      *
      * @return bool
@@ -236,13 +250,13 @@ class CloudImageModel
                 if ($this->saveName) {
                     $file['savename'] = $this->saveName;
                 } else {
-                    $file['savename'] = uniqid().'.'.$file['extension'];
+                    $file['savename'] = uniqid() . '.' . $file['extension'];
                 }
 
                 //移动设备上传的无后缀的图片，默认为jpg
                 if ($GLOBALS['fromMobile'] == true && empty($file['extension'])) {
                     $file['extension'] = 'jpg';
-                    $file['savename'] = trim($file['savename'], '.').'.jpg';
+                    $file['savename'] = trim($file['savename'], '.') . '.jpg';
                 } elseif ($this->autoCheck) {
                     if (!$this->check($file)) {
                         return false;
@@ -263,7 +277,7 @@ class CloudImageModel
                 $cloud->setTimeout(60);
 
                 $file_content = file_get_contents($file['tmp_name']);
-                $res = $cloud->writeFile('/'.$file['savepath'].$file['savename'], $file_content, true);
+                $res = $cloud->writeFile('/' . $file['savepath'] . $file['savename'], $file_content, true);
                 if (!$res) {
                     $this->error = '上传到云服务器失败！';
 
@@ -337,7 +351,7 @@ class CloudImageModel
                 if (isset($this->maxSize) && !empty($this->maxSize)) {
                     $size = byte_format($this->maxSize);
                 }
-                $this->error = '上传文件大小不符，文件不能超过 '.$size;
+                $this->error = '上传文件大小不符，文件不能超过 ' . $size;
                 break;
             case 2:
                 $size = ini_get('upload_max_filesize');
@@ -349,7 +363,7 @@ class CloudImageModel
                 if (isset($this->maxSize) && !empty($this->maxSize)) {
                     $size = byte_format($this->maxSize);
                 }
-                $this->error = '上传文件大小不符，文件不能超过 '.$size;
+                $this->error = '上传文件大小不符，文件不能超过 ' . $size;
                 break;
             case 3:
                 $this->error = '文件只有部分被上传';
@@ -387,7 +401,7 @@ class CloudImageModel
         //文件上传成功，进行自定义规则检查
         //检查文件大小
         if (!$this->checkSize($file['size'])) {
-            $this->error = '上传文件大小不符,文件不能超过 '.byte_format($this->maxSize);
+            $this->error = '上传文件大小不符,文件不能超过 ' . byte_format($this->maxSize);
 
             return false;
         }
