@@ -91,11 +91,14 @@ class VideoModel extends Model
 
                 //保存到云存储
                 $config = $this->getConfig();
+                $ossDomain = $config['cloud_attach_prefix_urls'];
                 $cloud = new AliOss($config['cloud_attach_bucket'], $config['cloud_attach_admin'], $config['cloud_attach_password'], $config['cloud_attach_api_url']);
                 $_savePtah = $this->_getSavePath();
+
                 $videoPath = $this->_getSavePath() . '/source/' . $video_name;
                 $videoImagePath = $this->_getSavePath() . '/' . $image_name;
                 $videoPartPath = $this->_getSavePath() . '/part/' . $video_name;
+
                 $ossVideoPath = $_savePtah . '/source/' . $video_name;
                 $ossVideoImgPath = $_savePtah . '/' . $image_name;
                 $ossVideoPartPath = $_savePtah . '/part/' . $video_name;
@@ -109,15 +112,16 @@ class VideoModel extends Model
                 if (file_exists($videoPartPath)) {
                     $uploadOssPartResult = $cloud->writeFile($ossVideoPartPath, fopen($videoPartPath, 'r'));
                 }
-                $result['video_path'] = $videoPath;
-                $result['video_mobile_path'] = $videoPath;
-                $result['video_part_path'] = $videoPartPath;
+
+                $result['video_path'] = $ossDomain . $videoPath;
+                $result['video_mobile_path'] = $ossDomain . $videoPath;
+                $result['video_part_path'] = $ossDomain . $videoPartPath;
                 $result['size'] = intval($_FILES['video']['size']);
                 $result['name'] = t($_FILES['video']['name']);
                 $result['ctime'] = time();
                 $result['uid'] = intval($_SESSION['mid']);
                 $result['extension'] = $video_ext;
-                $result['image_path'] = $videoImagePath;
+                $result['image_path'] = $ossDomain . $videoImagePath;
                 $result['transfer_id'] = $transfer_id;
 
                 if ($image_info = getimagesize($savePath . '/' . $image_name)) {
@@ -207,14 +211,13 @@ class VideoModel extends Model
         // 截取首帧视频图像
         $this->get_video_image($ffmpegPath, $videoPath, $videoImagePath);
 
+        $ossDomain = $config['cloud_attach_prefix_urls'];
+
         $ossVideoPath = $_savePtah . '/' . $videoName;
         $ossVideoImgPath = $_savePtah . '/' . $imageName;
         // 保存到oss
         if (file_exists($videoPath)) {
             $uploadOssResult = $cloud->writeFile($ossVideoPath, fopen($videoPath, 'r'));
-        }
-        if (file_exists($videoImagePath)) {
-            $uploadOssImgResult = $cloud->writeFile($ossVideoImgPath, fopen($videoImagePath, 'r'));
         }
         $data = array(
             'uid' => isset($_SESSION['mid']) ? intval($_SESSION['mid']) : 0,
@@ -223,9 +226,12 @@ class VideoModel extends Model
             'size' => $video['size'],
             'timeline' => intval($this->get_video_timeline($ffmpegPath, $videoPath)),
             'extension' => $ext,
-            'video_path' => $path . '/' . $videoName,
-            'video_part_path' => $path . '/' . $videoName,
-            'video_mobile_path' => $path . '/' . $videoName,
+//            'video_path' => $path . '/' . $videoName,
+//            'video_part_path' => $path . '/' . $videoName,
+//            'video_mobile_path' => $path . '/' . $videoName,
+            'video_path' => $ossDomain . $ossVideoPath,
+            'video_part_path' => $ossDomain . $ossVideoPath,
+            'video_mobile_path' => $ossDomain . $ossVideoPath,
             'image_path' => null,
             'image_width' => 0,
             'image_height' => 0,
@@ -237,7 +243,10 @@ class VideoModel extends Model
         );
 
         if (file_exists($videoImagePath)) {
-            $data['image_path'] = $path . '/' . $imageName;
+            $uploadOssImgResult = $cloud->writeFile($ossVideoImgPath, fopen($videoImagePath, 'r'));
+
+            //$data['image_path'] = $path . '/' . $imageName;
+            $data['image_path'] = $ossDomain . $ossVideoImgPath;
 
             $imageInfo = getimagesize($videoImagePath);
             $data['image_width'] = isset($imageInfo[0]) ? $imageInfo[0] : 0;
