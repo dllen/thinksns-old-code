@@ -81,7 +81,8 @@ class CloudImageModel
         }
         $cloud_image_prefix_url = trim($cloud_image_prefix_url);
         if ($width && $height) {
-            return $cloud_image_prefix_url.$filename.'!'.$width.'x'.$height.(($cut) ? '.cut' : '').'.jpg';
+           // return $cloud_image_prefix_url.$filename.'!'.$width.'x'.$height.(($cut) ? '.cut' : '').'.jpg';
+            return $cloud_image_prefix_url . $filename . '?x-oss-process=image/resize,w_' . $width . ',h_' . $height . ',limit_0&name=' . $cut;
         } else {
             return $cloud_image_prefix_url.$filename;
         }

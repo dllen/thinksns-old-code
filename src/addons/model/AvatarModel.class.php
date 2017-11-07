@@ -263,10 +263,14 @@ class AvatarModel
             $res = $cloud->writeFile($original_file_name, $imageAsString, true);
             if ($res) {
                 unset($return);
-                $return['data']['big'] = getImageUrl($original_file_name) . '!big.avatar.jpg?v' . $filemtime;
-                $return['data']['middle'] = getImageUrl($original_file_name) . '!middle.avatar.jpg?v' . $filemtime;
-                $return['data']['small'] = getImageUrl($original_file_name) . '!small.avatar.jpg?v' . $filemtime;
-                $return['data']['tiny'] = getImageUrl($original_file_name) . '!tiny.avatar.jpg?v' . $filemtime;
+//                $return['data']['big'] = getImageUrl($original_file_name) . '!big.avatar.jpg?v' . $filemtime;
+//                $return['data']['middle'] = getImageUrl($original_file_name) . '!middle.avatar.jpg?v' . $filemtime;
+//                $return['data']['small'] = getImageUrl($original_file_name) . '!small.avatar.jpg?v' . $filemtime;
+//                $return['data']['tiny'] = getImageUrl($original_file_name) . '!tiny.avatar.jpg?v' . $filemtime;
+                $return['data']['big'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_200,h_200,limit_0';
+                $return['data']['middle'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_100,h_100,limit_0';
+                $return['data']['small'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_50,h_50,limit_0';
+                $return['data']['tiny'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_30,h_30,limit_0';
                 $return['status'] = 1;
                 // 清理用户缓存
                 model('User')->cleanCache($this->_uid);
@@ -410,10 +414,14 @@ class AvatarModel
             $res = $cloud->writeFile($original_file_name, $imageAsString, true);
             if ($res) {
                 unset($return);
-                $return['data']['big'] = getImageUrl($original_file_name) . '!big.avatar.jpg?v' . $filemtime;
-                $return['data']['middle'] = getImageUrl($original_file_name) . '!middle.avatar.jpg?v' . $filemtime;
-                $return['data']['small'] = getImageUrl($original_file_name) . '!small.avatar.jpg?v' . $filemtime;
-                $return['data']['tiny'] = getImageUrl($original_file_name) . '!tiny.avatar.jpg?v' . $filemtime;
+//                $return['data']['big'] = getImageUrl($original_file_name) . '!big.avatar.jpg?v' . $filemtime;
+//                $return['data']['middle'] = getImageUrl($original_file_name) . '!middle.avatar.jpg?v' . $filemtime;
+//                $return['data']['small'] = getImageUrl($original_file_name) . '!small.avatar.jpg?v' . $filemtime;
+//                $return['data']['tiny'] = getImageUrl($original_file_name) . '!tiny.avatar.jpg?v' . $filemtime;
+                $return['data']['big'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_200,h_200,limit_0';
+                $return['data']['middle'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_100,h_100,limit_0';
+                $return['data']['small'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_50,h_50,limit_0';
+                $return['data']['tiny'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_30,h_30,limit_0';
                 $return['status'] = 1;
             } else {
                 $return['status'] = '0';
@@ -493,10 +501,14 @@ class AvatarModel
             $res = $cloud->writeFile($original_file_name, $imageAsString, true);
             if ($res) {
                 unset($return);
-                $return['data']['big'] = getImageUrl($original_file_name) . '!big.avatar.jpg?v' . $filemtime;
-                $return['data']['middle'] = getImageUrl($original_file_name) . '!middle.avatar.jpg?v' . $filemtime;
-                $return['data']['small'] = getImageUrl($original_file_name) . '!small.avatar.jpg?v' . $filemtime;
-                $return['data']['tiny'] = getImageUrl($original_file_name) . '!tiny.avatar.jpg?v' . $filemtime;
+//                $return['data']['big'] = getImageUrl($original_file_name) . '!big.avatar.jpg?v' . $filemtime;
+//                $return['data']['middle'] = getImageUrl($original_file_name) . '!middle.avatar.jpg?v' . $filemtime;
+//                $return['data']['small'] = getImageUrl($original_file_name) . '!small.avatar.jpg?v' . $filemtime;
+//                $return['data']['tiny'] = getImageUrl($original_file_name) . '!tiny.avatar.jpg?v' . $filemtime;
+                $return['data']['big'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_200,h_200,limit_0';
+                $return['data']['middle'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_100,h_100,limit_0';
+                $return['data']['small'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_50,h_50,limit_0';
+                $return['data']['tiny'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_30,h_30,limit_0';
                 $return['status'] = 1;
                 // 清理用户缓存
                 model('User')->cleanCache($this->_uid);
