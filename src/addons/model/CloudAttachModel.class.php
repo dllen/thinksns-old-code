@@ -45,6 +45,7 @@ class CloudAttachModel
     }
 
     //是否开启Upyun
+    //是否开启云存储
     public function isOpen()
     {
         return intval($this->config['cloud_attach_open']);
@@ -53,7 +54,7 @@ class CloudAttachModel
     //获取上传地址
     public function getUploadUrl()
     {
-        return $this->config['cloud_attach_api_url'].'/'.$this->config['cloud_attach_bucket'].'/';
+        return $this->config['cloud_attach_api_url'] . '/' . $this->config['cloud_attach_bucket'] . '/';
     }
 
     //获取附件地址
@@ -71,7 +72,7 @@ class CloudAttachModel
         }
         $cloud_attach_prefix_url = trim($cloud_attach_prefix_url);
 
-        return $cloud_attach_prefix_url.'/'.$filename;
+        return $cloud_attach_prefix_url . '/' . $filename;
     }
 
     //获取附件内容
@@ -79,9 +80,10 @@ class CloudAttachModel
     {
         $filename = trim($filename);
         $config = $this->getConfig();
-        $cloud = new UpYun($config['cloud_attach_bucket'], $config['cloud_attach_admin'], $config['cloud_attach_password']);
+        //$cloud = new UpYun($config['cloud_attach_bucket'], $config['cloud_attach_admin'], $config['cloud_attach_password']);
+        $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
         $cloud->setTimeout(60);
-        $content = $cloud->readFile('/'.$filename);
+        $content = $cloud->readFile('/' . $filename);
         if (!$content) {
             $this->error = '读取云附件失败！';
 
@@ -101,11 +103,11 @@ class CloudAttachModel
     public function getPolicydoc()
     {
         $policydoc = array(
-           'bucket'               => $this->config['cloud_attach_bucket'],
-           'expiration'           => time() + 600, //1分钟超时
-           'save-key'             => '/{year}/{mon}{day}/{random}.{suffix}',
-           'allow-file-type'      => 'jpg,jpeg,gif,png',
-           'content-length-range' => '0,5120000',    //最大5M
+            'bucket' => $this->config['cloud_attach_bucket'],
+            'expiration' => time() + 600, //1分钟超时
+            'save-key' => '/{year}/{mon}{day}/{random}.{suffix}',
+            'allow-file-type' => 'jpg,jpeg,gif,png',
+            'content-length-range' => '0,5120000',    //最大5M
         );
 
         return $policydoc;
@@ -122,7 +124,7 @@ class CloudAttachModel
     //获取signature
     public function getSignature()
     {
-        $signature = md5($this->getPolicy().'&'.$this->config['cloud_attach_form_api_key']);
+        $signature = md5($this->getPolicy() . '&' . $this->config['cloud_attach_form_api_key']);
 
         return $signature;
     }
@@ -164,13 +166,13 @@ class CloudAttachModel
                 if ($this->saveName) {
                     $file['savename'] = $this->saveName;
                 } else {
-                    $file['savename'] = uniqid().'.'.$file['extension'];
+                    $file['savename'] = uniqid() . '.' . $file['extension'];
                 }
 
                 //移动设备上传的无后缀的图片，默认为jpg
                 if ($GLOBALS['fromMobile'] == true && empty($file['extension'])) {
                     $file['extension'] = 'jpg';
-                    $file['savename'] = trim($file['savename'], '.').'.jpg';
+                    $file['savename'] = trim($file['savename'], '.') . '.jpg';
                 } elseif ($this->autoCheck) {
                     if (!$this->check($file)) {
                         return false;
@@ -185,11 +187,12 @@ class CloudAttachModel
 
                 //上传到云服务器
                 $config = $this->getConfig();
-                $cloud = new UpYun($config['cloud_attach_bucket'], $config['cloud_attach_admin'], $config['cloud_attach_password']);
+                //$cloud = new UpYun($config['cloud_attach_bucket'], $config['cloud_attach_admin'], $config['cloud_attach_password']);
+                $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
                 $cloud->setTimeout(60);
 
                 $file_content = file_get_contents($file['tmp_name']);
-                $res = $cloud->writeFile('/'.$file['savepath'].$file['savename'], $file_content, true);
+                $res = $cloud->writeFile('/' . $file['savepath'] . $file['savename'], $file_content, true);
                 if (!$res) {
                     $this->error = '上传到云服务器失败！';
 
@@ -263,7 +266,7 @@ class CloudAttachModel
                 if (isset($this->maxSize) && !empty($this->maxSize)) {
                     $size = byte_format($this->maxSize);
                 }
-                $this->error = '上传文件大小不符，文件不能超过 '.$size;
+                $this->error = '上传文件大小不符，文件不能超过 ' . $size;
                 break;
             case 2:
                 $size = ini_get('upload_max_filesize');
@@ -275,7 +278,7 @@ class CloudAttachModel
                 if (isset($this->maxSize) && !empty($this->maxSize)) {
                     $size = byte_format($this->maxSize);
                 }
-                $this->error = '上传文件大小不符，文件不能超过 '.$size;
+                $this->error = '上传文件大小不符，文件不能超过 ' . $size;
                 break;
             case 3:
                 $this->error = '文件只有部分被上传';
@@ -313,7 +316,7 @@ class CloudAttachModel
         //文件上传成功，进行自定义规则检查
         //检查文件大小
         if (!$this->checkSize($file['size'])) {
-            $this->error = '上传文件大小不符,文件不能超过 '.byte_format($this->maxSize);
+            $this->error = '上传文件大小不符,文件不能超过 ' . byte_format($this->maxSize);
 
             return false;
         }

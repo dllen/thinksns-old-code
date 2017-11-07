@@ -54,6 +54,7 @@ class CloudImageModel
     }
 
     //是否开启Upyun
+    //是否开启云存储
     public function isOpen()
     {
         return intval($this->config['cloud_image_open']);
@@ -103,10 +104,10 @@ class CloudImageModel
         //上传到云服务器
         $config = $this->getConfig();
 
-        $cloud = new UpYun($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+        //$cloud = new UpYun($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+        $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
         $cloud->setTimeout(60);
         $res = $cloud->getFileInfo($filename);
-
         return $res;
     }
 
@@ -159,7 +160,8 @@ class CloudImageModel
         //上传到云服务器
         $config = $this->getConfig();
 
-        $cloud = new UpYun($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+        //$cloud = new UpYun($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+        $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
         $cloud->setTimeout(60);
         $res = $cloud->writeFile($filename, $filecontent, true);
         if (!$res) {
@@ -183,7 +185,8 @@ class CloudImageModel
         //上传到云服务器
         $config = $this->getConfig();
 
-        $cloud = new UpYun($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+        //$cloud = new UpYun($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+        $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
         $cloud->setTimeout(60);
         $res = $cloud->deleteFile($filename);
         if (!$res) {
@@ -254,7 +257,8 @@ class CloudImageModel
                 //上传到云服务器
                 $config = $this->getConfig();
 
-                $cloud = new UpYun($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+                //$cloud = new UpYun($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
+                $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password']);
                 $cloud->setTimeout(60);
 
                 $file_content = file_get_contents($file['tmp_name']);
