@@ -84,8 +84,8 @@ class AvatarModel
         //头像云存储
         $cloud = model('CloudImage');
         if ($cloud->isOpen()) {
-            $original_file_info = $cloud->getFileInfo($original_file_name);
-            if ($original_file_info) {
+//            $original_file_info = $cloud->getFileInfo($original_file_name);
+//            if ($original_file_info) {
 //                又拍云配置
 //                $filemtime = @intval($original_file_info['date']);
 //                $avatar_url['avatar_original'] = getImageUrl($original_file_name).'?v'.$filemtime;
@@ -93,13 +93,13 @@ class AvatarModel
 //                $avatar_url['avatar_middle'] = getImageUrl($original_file_name).'!middle.avatar.jpg?v'.$filemtime;
 //                $avatar_url['avatar_small'] = getImageUrl($original_file_name).'!small.avatar.jpg?v'.$filemtime;
 //                $avatar_url['avatar_tiny'] = getImageUrl($original_file_name).'!tiny.avatar.jpg?v'.$filemtime;
-                //阿里云 OSS 配置
-                $avatar_url['avatar_original'] = getImageUrl($original_file_name);
-                $avatar_url['avatar_big'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_200,h_200,limit_0';
-                $avatar_url['avatar_middle'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_100,h_100,limit_0';
-                $avatar_url['avatar_small'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_50,h_50,limit_0';
-                $avatar_url['avatar_tiny'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_30,h_30,limit_0';
-            }
+//            }
+            //阿里云 OSS 配置
+            $avatar_url['avatar_original'] = getImageUrl($original_file_name);
+            $avatar_url['avatar_big'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_200,h_200,limit_0';
+            $avatar_url['avatar_middle'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_100,h_100,limit_0';
+            $avatar_url['avatar_small'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_50,h_50,limit_0';
+            $avatar_url['avatar_tiny'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_30,h_30,limit_0';
 
             //头像本地存储
         } elseif (file_exists(UPLOAD_PATH . $original_file_name)) {

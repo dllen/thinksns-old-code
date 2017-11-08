@@ -1817,7 +1817,14 @@ function getThumbImage($filename, $width = 100, $height = 'auto', $cut = false, 
 
     $cloud = model('CloudImage');
     if ($cloud->isOpen()) {
-        return $cloud->getImageUrl($filename, $width, $height, $cut);
+        $config = model('Xdata')->get('admin_Config:cloudimage');
+        $prefix_url = trim($config['cloud_image_prefix_urls']);
+        $filename = str_ireplace($prefix_url, '', $filename);
+        $ossSrc = $cloud->getImageUrl($filename, $width, $height, $cut);
+        $info['width'] = $width;
+        $info['height'] = $height;
+        $info['src'] = $ossSrc;
+        return $info;
     }
 
     $oldFile = $info['dirname'].DIRECTORY_SEPARATOR.$info['filename'].'.'.$info['extension'];
@@ -1879,7 +1886,7 @@ function getThumbImage($filename, $width = 100, $height = 'auto', $cut = false, 
             $info['height'] = $height;
             $info['src'] = $thumbFile;
 
-            return UPLOAD_URL.$info;
+            return $info;
         }
     }
 }
