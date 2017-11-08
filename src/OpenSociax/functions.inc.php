@@ -470,7 +470,7 @@ function C($name = null, $value = null)
         return $ts['_config'] = array_merge((array) $ts['_config'], array_change_key_case($name));
     }
 
-     // 避免非法参数
+    // 避免非法参数
 }
 
 //D函数的别名
@@ -1068,7 +1068,7 @@ function fetch($templateFile = '', $tvar = array(), $charset = 'utf-8', $content
 
     if (null === $templateFile) {
         // 使用null参数作为模版名直接返回不做任何输出
-    return;
+        return;
     }
 
     if (empty($charset)) {
@@ -1555,8 +1555,8 @@ function friendlyDate($sTime, $type = 'normal', $alt = 'false')
 function preg_html($html)
 {
     $p = array("/<[a|A][^>]+(topic=\"true\")+[^>]*+>#([^<]+)#<\/[a|A]>/",
-            "/<[a|A][^>]+(data=\")+([^\"]+)\"[^>]*+>[^<]*+<\/[a|A]>/",
-            '/<[img|IMG][^>]+(src=")+([^"]+)"[^>]*+>/', );
+        "/<[a|A][^>]+(data=\")+([^\"]+)\"[^>]*+>[^<]*+<\/[a|A]>/",
+        '/<[img|IMG][^>]+(src=")+([^"]+)"[^>]*+>/', );
     $t = array('topic{data=$2}', '$2', 'img{data=$2}');
     $html = preg_replace($p, $t, $html);
     $html = strip_tags($html, '<br/>');
@@ -1814,6 +1814,12 @@ function getThumbImage($filename, $width = 100, $height = 'auto', $cut = false, 
 {
     $filename = str_ireplace(UPLOAD_URL, '', $filename); //将URL转化为本地地址
     $info = pathinfo($filename);
+
+    $cloud = model('CloudImage');
+    if ($cloud->isOpen()) {
+        return $cloud->getImageUrl($filename, $width, $height, $cut);
+    }
+
     $oldFile = $info['dirname'].DIRECTORY_SEPARATOR.$info['filename'].'.'.$info['extension'];
     $thumbFile = $info['dirname'].DIRECTORY_SEPARATOR.$info['filename'].'_'.$width.'_'.$height.'.'.$info['extension'];
 
@@ -1873,7 +1879,7 @@ function getThumbImage($filename, $width = 100, $height = 'auto', $cut = false, 
             $info['height'] = $height;
             $info['src'] = $thumbFile;
 
-            return $info;
+            return UPLOAD_URL.$info;
         }
     }
 }
@@ -1916,12 +1922,12 @@ function saveImageToLocal($url)
         return false;
     }
     $opts = array(
-    'http' => array(
-      'method'     => 'GET',
-      'timeout'    => 30, //超时30秒
-      'user_agent' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)',
-      ),
-      );
+        'http' => array(
+            'method'     => 'GET',
+            'timeout'    => 30, //超时30秒
+            'user_agent' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)',
+        ),
+    );
     $context = stream_context_create($opts);
     $file_content = file_get_contents($url, false, $context);
     $file_path = date('/Y/md/H/');
@@ -1932,13 +1938,13 @@ function saveImageToLocal($url)
     }
     $file_name = uniqid().'.'.$i['extension'];
 
-      //又拍云存储
-      $cloud = model('CloudImage');
+    //又拍云存储
+    $cloud = model('CloudImage');
     if ($cloud->isOpen()) {
         $res = $cloud->writeFile($file_path.$file_name, $file_content);
     } else {
         //本地存储
-          $res = file_put_contents(UPLOAD_PATH.$file_path.$file_name, $file_content);
+        $res = file_put_contents(UPLOAD_PATH.$file_path.$file_name, $file_content);
     }
 
     if ($res) {
@@ -2640,9 +2646,9 @@ function tocurl($url, $header, $content)
 function sendSyncNotify($uid, $uri = '', $data = array(), $header = array('Auth-Appid: zb60225160269831'))
 {
     $return = array(
-            'status' => 0,
-            'msg'    => '',
-        );
+        'status' => 0,
+        'msg'    => '',
+    );
     $zhibo_service = C('STREAM_SERVICE_URL');
     $usid_prex = C('USID_PREX');
     !$zhibo_service && $return['msg'] = '请配置直播服务器地址';
@@ -2666,9 +2672,9 @@ function sendSyncNotify($uid, $uri = '', $data = array(), $header = array('Auth-
 function getLiveUserInfo($uid = '')
 {
     $return = array(
-                'status'  => 0,
-                'message' => '',
-        );
+        'status'  => 0,
+        'message' => '',
+    );
     !$uid && $return['message'] = '参数错误';
     $zhibo_service = C('STREAM_SERVICE_URL');
     $usid_prex = C('USID_PREX');
@@ -2693,9 +2699,9 @@ function getLiveUserInfo($uid = '')
 function delLiveUserInfo($usids = array())
 {
     $return = array(
-                'status'  => 0,
-                'message' => '',
-        );
+        'status'  => 0,
+        'message' => '',
+    );
     !$uid && $return['message'] = '参数错误';
     $zhibo_service = C('STREAM_SERVICE_URL').'/';
     $usid_prex = C('USID_PREX');
@@ -2852,14 +2858,14 @@ function tsauthcode($string, $operation = 'DECODE', $key = '')
 // 转移应用添加函数
 /**
  * 字符串截取，支持中文和其它编码
- +----------------------------------------------------------
++----------------------------------------------------------
  * @static
- +----------------------------------------------------------
++----------------------------------------------------------
  * @param string $str     需要转换的字符串
  * @param string $length  截取长度
  * @param string $charset 编码格式
  * @param string $suffix  截断显示字符
- +----------------------------------------------------------
++----------------------------------------------------------
  * @return string
  */
 function mStr($str, $length, $charset = 'utf-8', $suffix = true)
@@ -2868,15 +2874,15 @@ function mStr($str, $length, $charset = 'utf-8', $suffix = true)
 }
 /**
  * 字符串截取，支持中文和其它编码
- +----------------------------------------------------------
++----------------------------------------------------------
  * @static
- +----------------------------------------------------------
++----------------------------------------------------------
  * @param string $str     需要转换的字符串
  * @param string $start   开始位置
  * @param string $length  截取长度
  * @param string $charset 编码格式
  * @param string $suffix  截断显示字符
- +----------------------------------------------------------
++----------------------------------------------------------
  * @return string
  */
 function msubstr($str, $start, $length, $charset = 'utf-8', $suffix = true)
@@ -3285,12 +3291,12 @@ function RemoveXSS($val)
     $search .= '~`";:?+/={}[]-_|\'\\';
     for ($i = 0; $i < strlen($search); $i++) {
         // ;? matches the ;, which is optional
-      // 0{0,7} matches any padded zeros, which are optional and go up to 8 chars
+        // 0{0,7} matches any padded zeros, which are optional and go up to 8 chars
 
-      // @ @ search for the hex values
-      $val = preg_replace('/(&#[xX]0{0,8}'.dechex(ord($search[$i])).';?)/i', $search[$i], $val); // with a ;
-      // @ @ 0{0,7} matches '0' zero to seven times
-      $val = preg_replace('/(&#0{0,8}'.ord($search[$i]).';?)/', $search[$i], $val); // with a ;
+        // @ @ search for the hex values
+        $val = preg_replace('/(&#[xX]0{0,8}'.dechex(ord($search[$i])).';?)/i', $search[$i], $val); // with a ;
+        // @ @ 0{0,7} matches '0' zero to seven times
+        $val = preg_replace('/(&#0{0,8}'.ord($search[$i]).';?)/', $search[$i], $val); // with a ;
     }
 
     // now the only remaining whitespace attacks are \t, \n, and \r
@@ -3315,11 +3321,11 @@ function RemoveXSS($val)
             }
             $pattern .= '/i';
             $replacement = substr($ra[$i], 0, 2).'<x>'.substr($ra[$i], 2); // add in <> to nerf the tag
-         $val = preg_replace($pattern, $replacement, $val); // filter out the hex tags
-         if ($val_before == $val) {
-             // no replacements were made, so exit the loop
-            $found = false;
-         }
+            $val = preg_replace($pattern, $replacement, $val); // filter out the hex tags
+            if ($val_before == $val) {
+                // no replacements were made, so exit the loop
+                $found = false;
+            }
         }
     }
 
@@ -3337,38 +3343,38 @@ function RemoveXSS($val)
 function postUser()
 {
 
-        //检查是否设置直播地址
-        if (!$this->checkStreamServiceUrl()) {
-            return array(
-                    'status' => 0,
-                    'msg'    => '请先设置直播服务器地址',
-                );
-        }
-        //获取直播服务器地址
-        $live_service = $this->getStreamServiceUrl();
-        //组装数据
-        $data = array(
-            'usid'  => $this->usid_prex.$this->mid, //传递uid增加前缀
-            'uname' => getUserName($this->mid), //用户名
-            'sex'   => getUserField($this->mid, 'sex'),  //传递性别
+    //检查是否设置直播地址
+    if (!$this->checkStreamServiceUrl()) {
+        return array(
+            'status' => 0,
+            'msg'    => '请先设置直播服务器地址',
         );
+    }
+    //获取直播服务器地址
+    $live_service = $this->getStreamServiceUrl();
+    //组装数据
+    $data = array(
+        'usid'  => $this->usid_prex.$this->mid, //传递uid增加前缀
+        'uname' => getUserName($this->mid), //用户名
+        'sex'   => getUserField($this->mid, 'sex'),  //传递性别
+    );
 
     if ($this->mod->where(array('usid' => $data['usid']))->count() && !isset($data['ticket'])) {
         return array(
-                    'status' => 0,
-                    'msg'    => '直播用户已经存在',
-                );
+            'status' => 0,
+            'msg'    => '直播用户已经存在',
+        );
         die;
     }
 
-        //参数检测
-        if (in_array('', $data)) {
-            return array(
-                    'status' => 0,
-                    'msg'    => '参数不完整',
-                );
-            die;
-        }
+    //参数检测
+    if (in_array('', $data)) {
+        return array(
+            'status' => 0,
+            'msg'    => '参数不完整',
+        );
+        die;
+    }
 
     $result = json_decode(tocurl($this->Service_User_Url, $this->curl_header, $data), true);
     if ($result['code'] == 1) {
@@ -3381,35 +3387,35 @@ function postUser()
         if (!isset($data['ticket'])) {
             if (!$this->mod->add($add_data)) {
                 //写入直播用户数据失败
-                    return array(
-                            'status' => 0,
-                            'msg'    => '直播用户注册失败',
-                        );
+                return array(
+                    'status' => 0,
+                    'msg'    => '直播用户注册失败',
+                );
                 die;
             }
 
             return array(
-                        'status' => 1,
-                        'msg'    => '直播用户注册成功',
-                        'data'   => $add_data,
-                    );
+                'status' => 1,
+                'msg'    => '直播用户注册成功',
+                'data'   => $add_data,
+            );
             die;
         } else {
             unset($add_data['ctime']);
             if (!$this->mod->where(array('usid' => $add_data['usid']))->save($add_data)) {
                 //写入直播用户数据失败
-                    return array(
-                            'status' => 0,
-                            'msg'    => '直播用户更新失败',
-                        );
+                return array(
+                    'status' => 0,
+                    'msg'    => '直播用户更新失败',
+                );
                 die;
             }
 
             return array(
-                        'status' => 1,
-                        'msg'    => '直播用户更新成功',
-                        'data'   => $add_data,
-                    );
+                'status' => 1,
+                'msg'    => '直播用户更新成功',
+                'data'   => $add_data,
+            );
             die;
         }
     }
