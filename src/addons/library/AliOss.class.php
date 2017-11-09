@@ -164,6 +164,12 @@ class AliOss
         return $this->oss_client->getObject($this->bucketname, $file);
     }
 
+    public function fileIsExist($file)
+    {
+        $file = $this->getOssFile($file);
+        return $this->oss_client->doesObjectExist($this->bucketname, $file);
+    }
+
     /**
      * 获取文件信息.
      *

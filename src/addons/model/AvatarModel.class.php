@@ -48,12 +48,12 @@ class AvatarModel
         //头像云存储
         $cloud = model('CloudImage');
         if ($cloud->isOpen()) {
-            $original_file_info = $cloud->getFileInfo($original_file_name);
-            if ($original_file_info) {
-                $filemtime = @intval($original_file_info['date']);
-                $avatar = getImageUrl($original_file_name) . '!small.avatar.jpg?v' . $filemtime;
-            }
-
+//            $original_file_info = $cloud->getFileInfo($original_file_name);
+//            if ($original_file_info) {
+//                $filemtime = @intval($original_file_info['date']);
+//                $avatar = getImageUrl($original_file_name) . '!small.avatar.jpg?v' . $filemtime;
+//            }
+            $avatar = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_50,h_50,limit_0';
             //头像本地存储
         } elseif (file_exists(UPLOAD_PATH . $original_file_name)) {
             $filemtime = @filemtime(UPLOAD_PATH . $original_file_name);
@@ -83,7 +83,7 @@ class AvatarModel
 
         //头像云存储
         $cloud = model('CloudImage');
-        if ($cloud->isOpen()) {
+        if ($cloud->isOpen() && $cloud->fileIsExist($original_file_name)) {
 //            $original_file_info = $cloud->getFileInfo($original_file_name);
 //            if ($original_file_info) {
 //                又拍云配置
@@ -129,7 +129,9 @@ class AvatarModel
         //如果是又拍上传
         $cloud = model('CloudImage');
         if ($cloud->isOpen()) {
-            @$cloud->deleteFile($original_file_name);
+            if(@$cloud->fileIsExist($original_file_name)){
+                @$cloud->deleteFile($original_file_name);
+            }
             //重新上传新头像原图
             $imageAsString = $data['big'];
             $res = $cloud->writeFile($original_file_name, $imageAsString, true);
@@ -245,7 +247,7 @@ class AvatarModel
         $cloud = model('CloudImage');
         if ($cloud->isOpen()) {
             //切割原图
-            require_once SITE_PATH . '/addons/library/phpthumb/ThumbLib.inc.php';
+            require_once SITE_PATH . '/src/vendor/zhiyicx/thinksns-old-code/src/addons/library/phpthumb/ThumbLib.inc.php';
             $thumb = PhpThumbFactory::create($src);
             $res = $thumb->crop($x1, $y1, $w, $h);
 

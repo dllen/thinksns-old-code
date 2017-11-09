@@ -114,6 +114,14 @@ class CloudImageModel
         }
     }
 
+    public function fileIsExist($filename)
+    {
+        //上传到云服务器
+        $config = $this->getConfig();
+        $cloud = new AliOss($config['cloud_image_bucket'], $config['cloud_image_admin'], $config['cloud_image_password'], $config['cloud_image_api_url']);
+        return $cloud->fileIsExist($filename);
+    }
+
     public function getFileInfo($filename)
     {
         //上传到云服务器
