@@ -129,7 +129,7 @@ class AvatarModel
         //如果是又拍上传
         $cloud = model('CloudImage');
         if ($cloud->isOpen()) {
-            if(@$cloud->fileIsExist($original_file_name)){
+            if (@$cloud->fileIsExist($original_file_name)) {
                 @$cloud->deleteFile($original_file_name);
             }
             //重新上传新头像原图
