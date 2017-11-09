@@ -242,7 +242,7 @@ class VideoModel extends Model
         );
 
         if (file_exists($videoImagePath)) {
-            $uploadOssImgResult = $cloud->$videoPath($ossVideoImgPath, $videoImagePath);
+            $uploadOssImgResult = $cloud->uploadFile($ossVideoImgPath, $videoImagePath);
 
             //$data['image_path'] = $path . '/' . $imageName;
             $data['image_path'] = $ossDomain . $ossVideoImgPath;
