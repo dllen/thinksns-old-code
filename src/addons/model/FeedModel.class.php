@@ -400,6 +400,14 @@ class FeedModel extends Model
         // }
     }
 
+    public function formatPath($path, $videoServer)
+    {
+        if ($this->startsWith($path, 'http')) {
+            return $path;
+        }
+        return $videoServer . $path;
+    }
+
     /**
      * 获取指定分享的信息，用于资源模型输出???
      *
@@ -476,12 +484,12 @@ class FeedModel extends Model
 
                 $data['video_id'] = $fd['video_id'];
                 if ($forApi) {
-                    $data['flashvar'] = $fd['video_mobile_path'] ? $video_server . $fd['video_mobile_path'] : $video_server . $fd['video_path'];
-                    $data['flashvar_part'] = $video_server . $fd['video_part_path'];
+                    $data['flashvar'] = $fd['video_mobile_path'] ? $this->formatPath($fd['video_mobile_path'], $video_server) : $this->formatPath($fd['video_path'], $video_server);
+                    $data['flashvar_part'] = $this->formatPath($fd['video_part_path'], $video_server) ;
                 } else {
-                    $data['flashvar'] = $video_server . $fd['video_path'];
+                    $data['flashvar'] = $this->formatPath($fd['video_path'], $video_server);
                 }
-                $data['flashimg'] = $video_server . $fd['image_path'];
+                $data['flashimg'] = $this->formatPath($fd['image_path'], $video_server);
                 $data['flash_width'] = $fd['image_width'];
                 $data['flash_height'] = $fd['image_height'];
                 if ($fd['transfer_id'] && !D('video_transfer')->where('transfer_id=' . $fd['transfer_id'])->getField('status')) {
