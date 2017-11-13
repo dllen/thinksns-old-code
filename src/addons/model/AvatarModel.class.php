@@ -95,11 +95,12 @@ class AvatarModel
 //                $avatar_url['avatar_tiny'] = getImageUrl($original_file_name).'!tiny.avatar.jpg?v'.$filemtime;
 //            }
             //阿里云 OSS 配置
-            $avatar_url['avatar_original'] = getImageUrl($original_file_name);
-            $avatar_url['avatar_big'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_200,h_200,limit_0';
-            $avatar_url['avatar_middle'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_100,h_100,limit_0';
-            $avatar_url['avatar_small'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_50,h_50,limit_0';
-            $avatar_url['avatar_tiny'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_30,h_30,limit_0';
+            $timeStr = time();
+            $avatar_url['avatar_original'] = getImageUrl($original_file_name).'?r='.$timeStr;
+            $avatar_url['avatar_big'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_200,h_200,limit_0&r='.$timeStr;
+            $avatar_url['avatar_middle'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_100,h_100,limit_0&r='.$timeStr;
+            $avatar_url['avatar_small'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_50,h_50,limit_0&r='.$timeStr;
+            $avatar_url['avatar_tiny'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_30,h_30,limit_0&r='.$timeStr;
 
             //头像本地存储
         } elseif (file_exists(UPLOAD_PATH . $original_file_name)) {
