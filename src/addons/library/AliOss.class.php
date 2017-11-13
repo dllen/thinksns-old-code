@@ -133,6 +133,9 @@ class AliOss
     {
         $file = $this->getOssFile($file);
         $r = $this->oss_client->uploadFile($this->bucketname, $file, $fileName);
+        if(!is_null($r)){
+            unlink($fileName);
+        }
         return !is_null($r);
     }
 
