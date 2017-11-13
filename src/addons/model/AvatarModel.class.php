@@ -95,7 +95,9 @@ class AvatarModel
 //                $avatar_url['avatar_tiny'] = getImageUrl($original_file_name).'!tiny.avatar.jpg?v'.$filemtime;
 //            }
             //阿里云 OSS 配置
-            $timeStr = time();
+            $imgInfoExtra = getImageUrl($original_file_name).'?x-oss-process=image/info';
+            $imgInfo = $cloud->getAliOssImgInfo($imgInfoExtra);
+            $timeStr = $imgInfo['DateTime']['value'];
             $avatar_url['avatar_original'] = getImageUrl($original_file_name).'?r='.$timeStr;
             $avatar_url['avatar_big'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_200,h_200,limit_0&r='.$timeStr;
             $avatar_url['avatar_middle'] = getImageUrl($original_file_name) . '?x-oss-process=image/resize,w_100,h_100,limit_0&r='.$timeStr;

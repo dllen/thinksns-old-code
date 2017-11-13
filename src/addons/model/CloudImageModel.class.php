@@ -134,6 +134,12 @@ class CloudImageModel
         return $res;
     }
 
+    public function getAliOssImgInfo($url)
+    {
+        $result = file_get_contents($url);
+        return json_decode($result, true);
+    }
+
     //获取附件URL前缀
     public function getUrlPrefix()
     {
